@@ -35,6 +35,8 @@ namespace BowlingBall.Models
                 Type = FrameType.Normal;
             }
         }
+
+      
     }
 }
 

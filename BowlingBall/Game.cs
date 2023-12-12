@@ -1,6 +1,5 @@
 ﻿using BowlingBall.Interfaces;
 using BowlingBall.Models;
-using System;
 
 namespace BowlingBall
 {
@@ -11,10 +10,11 @@ namespace BowlingBall
         private Frame currentFrame;
         private int currentRoll = 1;
         private const int MaxFrames = 10;
+        private const int MaxPins = 10;
 
         public Game(IScoreCalculator calculator)
         {
-            this.calculator = calculator;
+            this.calculator = calculator ?? throw new ArgumentNullException(nameof(calculator));
             frames = new List<Frame>();
             currentFrame = new Frame();
             frames.Add(currentFrame);
@@ -22,6 +22,7 @@ namespace BowlingBall
 
         public void Roll(int pins)
         {
+            ValidatePins(pins);
             if (IsTenthFrame())
             {
                 HandleTenthFrameRoll(pins);
@@ -94,5 +95,17 @@ namespace BowlingBall
             return frames.Count == MaxFrames;
         }
 
+        private void ValidatePins(int pins)
+        {
+            if (pins < 0 || pins > MaxPins)
+            {
+                throw new ArgumentException("Pins must be between 0 and 10.");
+            }
+
+            if (currentRoll == 2 && currentFrame.FirstRoll + pins > MaxPins)
+            {
+                throw new ArgumentException("Total pins in a frame cannot exceed 10.");
+            }
+        }
     }
 }
