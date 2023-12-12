@@ -43,7 +43,6 @@ namespace BowlingBall.Tests
                 new Frame(1, 1), // 32+1=1 = 34
                 new Frame(1, 1), // 34+1=1 = 36
             };
-
             var calculator = new ScoreCalculator();
             int score = calculator.CalculateScore(frames);
             Assert.AreEqual(36, score); 
@@ -65,11 +64,32 @@ namespace BowlingBall.Tests
                 new Frame(1, 1), // 54+1+1 = 56
                 new Frame(1, 1), // 56+1+1 = 58
             };
-
             var calculator = new ScoreCalculator();
             int score = calculator.CalculateScore(frames);
             Assert.AreEqual(58, score);
         }
+
+        [TestMethod]
+        public void CalculateScore_WithSpareIn10thFrame_ShouldIncludeExtraRoll()
+        {
+            var frames = new List<Frame>
+            {
+                new Frame(1, 2), // 1+2 = 3
+                new Frame(1, 2), // 3+1+2 = 6
+                new Frame(1, 2), // 6+1+2 = 9
+                new Frame(1, 2), // 9+1+2 = 12
+                new Frame(1, 2), // 12+1+2 = 15
+                new Frame(1, 2), // 15+1+2 = 18
+                new Frame(1, 2), // 18+1+2 = 21
+                new Frame(1, 2), // 21+1+2 = 24
+                new Frame(1, 2), // 24+1+2 = 27
+                new Frame(7, 3, 5) // 27+7+3+5(E) = 42
+            };
+            var calculator = new ScoreCalculator();
+            int score = calculator.CalculateScore(frames);
+            Assert.AreEqual(42, score); 
+        }
+
 
         [TestMethod]
         public void CalculateScore_WithStrike_ShouldIncludeStrikeBonus_Basic()
@@ -87,7 +107,6 @@ namespace BowlingBall.Tests
                 new Frame(1, 1), // 34+1=1 = 36
                 new Frame(1, 1), // 36+1=1 = 38
             };
-
             var calculator = new ScoreCalculator();
             int score = calculator.CalculateScore(frames);
             Assert.AreEqual(38, score);
@@ -109,11 +128,119 @@ namespace BowlingBall.Tests
                 new Frame(1, 1), // 73+1=1 = 75
                 new Frame(1, 1), // 75+1=1 = 77
             };
-
             var calculator = new ScoreCalculator();
             int score = calculator.CalculateScore(frames);
             Assert.AreEqual(77, score);
         }
-    } 
+
+        [TestMethod]
+        public void CalculateScore_WithStrikeIn10thFrame_ShouldIncludeTwoExtraRolls()
+        {
+            var frames = new List<Frame>
+            {
+                new Frame(1, 2), // 1+2 = 3
+                new Frame(1, 2), // 3+1+2 = 6
+                new Frame(1, 2), // 6+1+2 = 9
+                new Frame(1, 2), // 9+1+2 = 12
+                new Frame(1, 2), // 12+1+2 = 15
+                new Frame(1, 2), // 15+1+2 = 18
+                new Frame(1, 2), // 18+1+2 = 21
+                new Frame(1, 2), // 21+1+2 = 24
+                new Frame(1, 2), // 24+1+2 = 27
+                new Frame(10, 5, 3) // 27+10+5+3(E) = 45
+            };
+            var calculator = new ScoreCalculator();
+            int score = calculator.CalculateScore(frames);
+            Assert.AreEqual(45, score);
+        }
+
+        [TestMethod]
+        public void CalculateScore_WithConsecutiveStrikesIn9thAnd10thFrames_ShouldCalculateCorrectly()
+        {
+            // Arrange
+            var frames = new List<Frame>
+            {
+                new Frame(1, 2), // 1+2 = 3
+                new Frame(1, 2), // 3+1+2 = 6
+                new Frame(1, 2), // 6+1+2 = 9
+                new Frame(1, 2), // 9+1+2 = 12
+                new Frame(1, 2), // 12+1+2 = 15
+                new Frame(1, 2), // 15+1+2 = 18
+                new Frame(1, 2), // 18+1+2 = 21
+                new Frame(1, 2), // 21+1+2 = 24
+                new Frame(10, 0), // 24+10+0+10+10 = 54
+                new Frame(10, 10, 10) // 54+10+10+10=84
+            };
+            var calculator = new ScoreCalculator();
+            int score = calculator.CalculateScore(frames);
+            Assert.AreEqual(84, score);
+        }
+
+        [TestMethod]
+        public void CalculateScore_WithConsecutive9thSpareAnd10thStrikeFrames_ShouldCalculateCorrectly()
+        {
+            // Arrange
+            var frames = new List<Frame>
+            {
+                new Frame(1, 2), // 1+2 = 3
+                new Frame(1, 2), // 3+1+2 = 6
+                new Frame(1, 2), // 6+1+2 = 9
+                new Frame(1, 2), // 9+1+2 = 12
+                new Frame(1, 2), // 12+1+2 = 15
+                new Frame(1, 2), // 15+1+2 = 18
+                new Frame(1, 2), // 18+1+2 = 21
+                new Frame(1, 2), // 21+1+2 = 24
+                new Frame(5, 5), // 24+5+5+10 = 44
+                new Frame(10, 10, 10) // 44+10+10+10=74
+            };
+            var calculator = new ScoreCalculator();
+            int score = calculator.CalculateScore(frames);
+            Assert.AreEqual(74, score);
+        }
+
+        [TestMethod]
+        public void CalculateScore_WithConsecutive9thStrikeAnd10thSpareFrames_ShouldCalculateCorrectly()
+        {
+            // Arrange
+            var frames = new List<Frame>
+            {
+                new Frame(1, 2), // 1+2 = 3
+                new Frame(1, 2), // 3+1+2 = 6
+                new Frame(1, 2), // 6+1+2 = 9
+                new Frame(1, 2), // 9+1+2 = 12
+                new Frame(1, 2), // 12+1+2 = 15
+                new Frame(1, 2), // 15+1+2 = 18
+                new Frame(1, 2), // 18+1+2 = 21
+                new Frame(1, 2), // 21+1+2 = 24
+                new Frame(10, 0), // 24+5+5+10 = 44
+                new Frame(5, 5, 10) // 44+5+5+10=64
+            };
+            var calculator = new ScoreCalculator();
+            int score = calculator.CalculateScore(frames);
+            Assert.AreEqual(64, score);
+        }
+
+        [TestMethod]
+        public void CalculateScore_WithAllStrike_ShouldCalculateCorrectly()
+        {
+            // Arrange
+            var frames = new List<Frame>
+            {
+                new Frame(10, 0), // 30
+                new Frame(10, 0), // 60
+                new Frame(10, 0), // 90
+                new Frame(10, 0), // 120
+                new Frame(10, 0), // 150
+                new Frame(10, 0), // 180
+                new Frame(10, 0), // 210
+                new Frame(10, 0), // 240
+                new Frame(10, 0), // 270
+                new Frame(10, 10, 10) // 300
+            };
+            var calculator = new ScoreCalculator();
+            int score = calculator.CalculateScore(frames);
+            Assert.AreEqual(300, score);
+        }
+    }
 }
 

@@ -1,5 +1,4 @@
-﻿using System;
-using BowlingBall.Enums;
+﻿using BowlingBall.Enums;
 using BowlingBall.Interfaces;
 using BowlingBall.Models;
 
@@ -12,45 +11,59 @@ namespace BowlingBall.Services
             int score = 0;
             for (int i = 0; i < frames.Count; i++)
             {
-                var frame = frames[i];
-                score += frame.FirstRoll + frame.SecondRoll;
+                score += CalculateFrameScore(frames[i]);
 
-                if (frame.Type == FrameType.Spare)
+                if (i < 9)
                 {
-                    score += CalculateSpareBonus(frames, i);
-                }
-                else if (frame.Type == FrameType.Strike)
-                {
-                    score += CalculateStrikeBonus(frames, i);
+                    if (frames[i].Type == FrameType.Strike)
+                    {
+                        score += CalculateStrikeBonus(frames, i);
+                    }
+                    else if (frames[i].Type == FrameType.Spare)
+                    {
+                        score += CalculateSpareBonus(frames, i);
+                    }
                 }
             }
             return score;
         }
 
-        private static int CalculateSpareBonus(List<Frame> frames, int frameIndex)
+        private static int CalculateFrameScore(Frame frame)
         {
-            return frames[frameIndex + 1].FirstRoll;
+            return frame.FirstRoll + frame.SecondRoll + frame.ExtraRoll;
         }
 
         private static int CalculateStrikeBonus(List<Frame> frames, int frameIndex)
         {
-
             int bonus = 0;
+
             if (frameIndex + 1 < frames.Count)
             {
-                var nextFrame = frames[frameIndex + 1];
-                bonus += nextFrame.FirstRoll;
+                bonus += frames[frameIndex + 1].FirstRoll;
 
-                if (nextFrame.Type == FrameType.Strike)
+                if (frames[frameIndex + 1].Type == FrameType.Strike)
                 {
-                    bonus += frameIndex + 2 < frames.Count ? frames[frameIndex + 2].FirstRoll : 0;
+                    if (frameIndex + 2 < frames.Count)
+                    {
+                        bonus += frames[frameIndex + 2].FirstRoll;
+                    }
+                    else
+                    {
+                        bonus += frames[frameIndex + 1].SecondRoll;
+                    }
                 }
                 else
                 {
-                    bonus += nextFrame.SecondRoll;
+                    bonus += frames[frameIndex + 1].SecondRoll;
                 }
             }
+
             return bonus;
+        }
+
+        private static int CalculateSpareBonus(List<Frame> frames, int frameIndex)
+        {
+            return frameIndex + 1 < frames.Count ? frames[frameIndex + 1].FirstRoll : 0;
         }
     }
 }
