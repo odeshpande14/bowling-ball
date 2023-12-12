@@ -14,6 +14,22 @@ namespace BowlingBall.Tests
             Assert.AreEqual(0, game.GetScore());
         }
 
+        [TestMethod]
+        public void Gutter_game_score_should_be_zero_test1()
+        {
+            var game = new Game();
+            Roll(game, 0, 20);
+            Assert.AreEqual(0, game.GetScore());
+        }
+
+        [TestMethod]
+        public void Gutter_game_score_should_be_zero_test2()
+        {
+            var game = new Game();
+            Roll(game, 0, 20);
+            Assert.AreEqual(0, game.GetScore());
+        }
+
         private void Roll(Game game, int pins, int times)
         {
             for (int i = 0; i < times; i++)
