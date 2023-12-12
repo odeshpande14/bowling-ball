@@ -19,6 +19,10 @@ namespace BowlingBall.Services
                 {
                     score += CalculateSpareBonus(frames, i);
                 }
+                else if (frame.Type == FrameType.Strike)
+                {
+                    score += CalculateStrikeBonus(frames, i);
+                }
             }
             return score;
         }
@@ -26,6 +30,27 @@ namespace BowlingBall.Services
         private static int CalculateSpareBonus(List<Frame> frames, int frameIndex)
         {
             return frames[frameIndex + 1].FirstRoll;
+        }
+
+        private static int CalculateStrikeBonus(List<Frame> frames, int frameIndex)
+        {
+
+            int bonus = 0;
+            if (frameIndex + 1 < frames.Count)
+            {
+                var nextFrame = frames[frameIndex + 1];
+                bonus += nextFrame.FirstRoll;
+
+                if (nextFrame.Type == FrameType.Strike)
+                {
+                    bonus += frameIndex + 2 < frames.Count ? frames[frameIndex + 2].FirstRoll : 0;
+                }
+                else
+                {
+                    bonus += nextFrame.SecondRoll;
+                }
+            }
+            return bonus;
         }
     }
 }
