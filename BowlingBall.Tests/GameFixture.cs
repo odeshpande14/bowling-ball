@@ -1,7 +1,4 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-namespace BowlingBall.Tests
+﻿namespace BowlingBall.Tests
 {
     [TestClass]
     public class GameFixture

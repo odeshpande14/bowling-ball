@@ -13,7 +13,13 @@ namespace BowlingBall.Models
         {
             FirstRoll = firstRoll;
             SecondRoll = secondRoll;
-            Type = FrameType.Normal; 
+
+            if (FirstRoll == 10)
+                Type = FrameType.Strike;
+            else if (FirstRoll + SecondRoll == 10)
+                Type = FrameType.Spare;
+            else
+                Type = FrameType.Normal;
         }
     }
 }
