@@ -1,13 +1,26 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-namespace BowlingBall.Tests
+﻿namespace BowlingBall.Tests
 {
     [TestClass]
     public class GameFixture
     {
         [TestMethod]
         public void Gutter_game_score_should_be_zero_test()
+        {
+            var game = new Game();
+            Roll(game, 0, 20);
+            Assert.AreEqual(0, game.GetScore());
+        }
+
+        [TestMethod]
+        public void Gutter_game_score_should_be_zero_test1()
+        {
+            var game = new Game();
+            Roll(game, 0, 20);
+            Assert.AreEqual(0, game.GetScore());
+        }
+
+        [TestMethod]
+        public void Gutter_game_score_should_be_zero_test2()
         {
             var game = new Game();
             Roll(game, 0, 20);
