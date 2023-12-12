@@ -1,22 +1,98 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BowlingBall.Interfaces;
+using BowlingBall.Models;
+using System;
 
 namespace BowlingBall
 {
     public class Game
     {
+        private readonly List<Frame> frames;
+        private readonly IScoreCalculator calculator;
+        private Frame currentFrame;
+        private int currentRoll = 1;
+        private const int MaxFrames = 10;
+
+        public Game(IScoreCalculator calculator)
+        {
+            this.calculator = calculator;
+            frames = new List<Frame>();
+            currentFrame = new Frame();
+            frames.Add(currentFrame);
+        }
+
         public void Roll(int pins)
         {
-            // Add your logic here. Add classes as needed.
+            if (IsTenthFrame())
+            {
+                HandleTenthFrameRoll(pins);
+            }
+            else
+            {
+                HandleRegularFrameRoll(pins);
+            }
         }
 
         public int GetScore()
         {
-            // Returns the final score of the game.
-            return 0;
+            return calculator.CalculateScore(frames);
         }
+
+        private void StartNewFrame()
+        {
+            currentFrame = new Frame();
+            frames.Add(currentFrame);
+            currentRoll = 1;
+        }
+
+        private void HandleRegularFrameRoll(int pins)
+        {
+            if (currentRoll == 1)
+            {
+                currentFrame.FirstRoll = pins;
+                if (pins == 10) 
+                {
+                    currentFrame.SecondRoll = 0;
+                    currentFrame.DetermineFrameType();
+                    StartNewFrame();
+                }
+                else
+                {
+                    currentRoll = 2; 
+                }
+            }
+            else
+            {
+                currentFrame.SecondRoll = pins;
+                currentFrame.DetermineFrameType();
+                StartNewFrame(); 
+            }
+        }
+
+        private void HandleTenthFrameRoll(int pins)
+        {
+            if (currentRoll == 1)
+            {
+                currentFrame.FirstRoll = pins;
+                currentRoll = 2;
+            }
+            else if (currentRoll == 2)
+            {
+                currentFrame.SecondRoll = pins;
+                if (pins == 10 || currentFrame.FirstRoll + pins == 10)
+                {
+                    currentRoll = 3;
+                }
+            }
+            else
+            {
+                currentFrame.ExtraRoll = pins;
+            }
+        }
+
+        private bool IsTenthFrame()
+        {
+            return frames.Count == MaxFrames;
+        }
+
     }
 }

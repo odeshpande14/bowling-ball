@@ -5,10 +5,12 @@ namespace BowlingBall.Models
 {
     public class Frame
     {
-        public int FirstRoll { get; private set; }
-        public int SecondRoll { get; private set; }
-        public int ExtraRoll { get; private set; }
+        public int FirstRoll { get; set; }
+        public int SecondRoll { get; set; }
+        public int ExtraRoll { get; set; }
         public FrameType Type { get; private set; }
+
+        public Frame() { }
 
         public Frame(int firstRoll, int secondRoll, int extraRoll = 0)
         {
@@ -18,7 +20,7 @@ namespace BowlingBall.Models
             DetermineFrameType();
         }
 
-        private void DetermineFrameType()
+        public void DetermineFrameType()
         {
             if (FirstRoll == 10)
             {
