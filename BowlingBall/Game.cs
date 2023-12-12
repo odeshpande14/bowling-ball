@@ -5,19 +5,16 @@ namespace BowlingBall
 {
     public class Game
     {
-        private readonly List<Frame> frames;
-        private readonly IScoreCalculator calculator;
-        private Frame currentFrame;
+        private readonly IFrameRepository frameRepository;
+        private readonly IScoreCalculationStrategy calculator;
         private int currentRoll = 1;
         private const int MaxFrames = 10;
         private const int MaxPins = 10;
 
-        public Game(IScoreCalculator calculator)
+        public Game(IFrameRepository frameRepository, IScoreCalculationStrategy calculator)
         {
             this.calculator = calculator ?? throw new ArgumentNullException(nameof(calculator));
-            frames = new List<Frame>();
-            currentFrame = new Frame();
-            frames.Add(currentFrame);
+            this.frameRepository= frameRepository ?? throw new ArgumentNullException(nameof(frameRepository));
         }
 
         public void Roll(int pins)
@@ -35,13 +32,13 @@ namespace BowlingBall
 
         public int GetScore()
         {
+            var frames = frameRepository.GetAllFrames();
             return calculator.CalculateScore(frames);
         }
 
         private void StartNewFrame()
         {
-            currentFrame = new Frame();
-            frames.Add(currentFrame);
+            frameRepository.AddFrame(new Frame());
             currentRoll = 1;
         }
 
@@ -49,11 +46,11 @@ namespace BowlingBall
         {
             if (currentRoll == 1)
             {
-                currentFrame.FirstRoll = pins;
+                frameRepository.GetCurrentFrame().FirstRoll = pins;
                 if (pins == 10) 
                 {
-                    currentFrame.SecondRoll = 0;
-                    currentFrame.DetermineFrameType();
+                    frameRepository.GetCurrentFrame().SecondRoll = 0;
+                    frameRepository.GetCurrentFrame().DetermineFrameType();
                     StartNewFrame();
                 }
                 else
@@ -63,8 +60,8 @@ namespace BowlingBall
             }
             else
             {
-                currentFrame.SecondRoll = pins;
-                currentFrame.DetermineFrameType();
+                frameRepository.GetCurrentFrame().SecondRoll = pins;
+                frameRepository.GetCurrentFrame().DetermineFrameType();
                 StartNewFrame(); 
             }
         }
@@ -73,26 +70,26 @@ namespace BowlingBall
         {
             if (currentRoll == 1)
             {
-                currentFrame.FirstRoll = pins;
+                frameRepository.GetCurrentFrame().FirstRoll = pins;
                 currentRoll = 2;
             }
             else if (currentRoll == 2)
             {
-                currentFrame.SecondRoll = pins;
-                if (pins == 10 || currentFrame.FirstRoll + pins == 10)
+                frameRepository.GetCurrentFrame().SecondRoll = pins;
+                if (pins == 10 || frameRepository.GetCurrentFrame().FirstRoll + pins == 10)
                 {
                     currentRoll = 3;
                 }
             }
             else
             {
-                currentFrame.ExtraRoll = pins;
+                frameRepository.GetCurrentFrame().ExtraRoll = pins;
             }
         }
 
         private bool IsTenthFrame()
         {
-            return frames.Count == MaxFrames;
+            return frameRepository.GetAllFrames().Count == MaxFrames;
         }
 
         private void ValidatePins(int pins)
@@ -101,8 +98,7 @@ namespace BowlingBall
             {
                 throw new ArgumentException("Pins must be between 0 and 10.");
             }
-
-            if (currentRoll == 2 && currentFrame.FirstRoll + pins > MaxPins)
+            if (!IsTenthFrame() && (currentRoll == 2 && frameRepository.GetCurrentFrame().FirstRoll + pins > MaxPins))
             {
                 throw new ArgumentException("Total pins in a frame cannot exceed 10.");
             }
