@@ -2,7 +2,7 @@
 
 namespace BowlingBall.Interfaces
 {
-    public interface IScoreCalculator
+    public interface IScoreCalculationStrategy
     {
         int CalculateScore(List<Frame> frames);
     }

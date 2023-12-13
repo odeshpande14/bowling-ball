@@ -2,9 +2,9 @@
 using BowlingBall.Interfaces;
 using BowlingBall.Models;
 
-namespace BowlingBall.Services
+namespace BowlingBall.Strategies
 {
-	public class ScoreCalculator : IScoreCalculator
+	public class StandardScoreCalculationStrategy : IScoreCalculationStrategy
     {
         public int CalculateScore(List<Frame> frames)
         {
