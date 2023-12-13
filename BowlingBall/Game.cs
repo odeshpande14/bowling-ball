@@ -1,5 +1,6 @@
 ﻿using BowlingBall.Interfaces;
 using BowlingBall.Models;
+using BowlingBall.Enums;
 
 namespace BowlingBall
 {
@@ -8,8 +9,6 @@ namespace BowlingBall
         private readonly IFrameRepository frameRepository;
         private readonly IScoreCalculationStrategy calculator;
         private int currentRoll = 1;
-        private const int MaxFrames = 10;
-        private const int MaxPins = 10;
 
         public Game(IFrameRepository frameRepository, IScoreCalculationStrategy calculator)
         {
@@ -44,61 +43,66 @@ namespace BowlingBall
 
         private void HandleRegularFrameRoll(int pins)
         {
+            var currentFrame = frameRepository.GetCurrentFrame();
+
             if (currentRoll == 1)
             {
-                frameRepository.GetCurrentFrame().FirstRoll = pins;
-                if (pins == 10) 
+                currentFrame.SetFirstRoll(pins);
+                if (pins == Constants.Constants.MaxPins) 
                 {
-                    frameRepository.GetCurrentFrame().SecondRoll = 0;
-                    frameRepository.GetCurrentFrame().DetermineFrameType();
                     StartNewFrame();
                 }
                 else
                 {
-                    currentRoll = 2; 
+                    currentRoll = 2;
                 }
             }
             else
             {
-                frameRepository.GetCurrentFrame().SecondRoll = pins;
-                frameRepository.GetCurrentFrame().DetermineFrameType();
-                StartNewFrame(); 
+                currentFrame.SetSecondRoll(pins);
+                StartNewFrame();
             }
         }
 
         private void HandleTenthFrameRoll(int pins)
         {
+            var currentFrame = frameRepository.GetCurrentFrame();
+
             if (currentRoll == 1)
             {
-                frameRepository.GetCurrentFrame().FirstRoll = pins;
+                currentFrame.SetFirstRoll(pins);
                 currentRoll = 2;
             }
             else if (currentRoll == 2)
             {
-                frameRepository.GetCurrentFrame().SecondRoll = pins;
-                if (pins == 10 || frameRepository.GetCurrentFrame().FirstRoll + pins == 10)
+                currentFrame.SetSecondRoll(pins);
+                if (currentFrame.Type == FrameType.Strike || (currentFrame.FirstRoll + pins == Constants.Constants.MaxPins))
                 {
                     currentRoll = 3;
+                }
+                else
+                {
+                    StartNewFrame();
                 }
             }
             else
             {
-                frameRepository.GetCurrentFrame().ExtraRoll = pins;
+                currentFrame.SetBonusRoll(pins);
             }
         }
 
         private bool IsTenthFrame()
         {
-            return frameRepository.GetAllFrames().Count == MaxFrames;
+            return frameRepository.GetAllFrames().Count == Constants.Constants.MaxFrames;
         }
 
         private void ValidatePins(int pins)
         {
-            if (pins < 0 || pins > MaxPins)
+            if (pins < 0 || pins > Constants.Constants.MaxPins)
             {
                 throw new ArgumentException("Pins must be between 0 and 10.");
             }
-            if (!IsTenthFrame() && (currentRoll == 2 && frameRepository.GetCurrentFrame().FirstRoll + pins > MaxPins))
+            if (!IsTenthFrame() && (currentRoll == 2 && frameRepository.GetCurrentFrame().FirstRoll + pins > Constants.Constants.MaxPins))
             {
                 throw new ArgumentException("Total pins in a frame cannot exceed 10.");
             }

@@ -5,9 +5,9 @@ namespace BowlingBall.Models
 {
     public class Frame
     {
-        public int FirstRoll { get; set; }
-        public int SecondRoll { get; set; }
-        public int ExtraRoll { get; set; }
+        public int FirstRoll { get; private set; }
+        public int SecondRoll { get; private set; }
+        public int ExtraRoll { get; private set; }
         public FrameType Type { get; private set; }
 
         public Frame() { }
@@ -20,13 +20,40 @@ namespace BowlingBall.Models
             DetermineFrameType();
         }
 
-        public void DetermineFrameType()
+        public void SetRolls(int firstRoll, int secondRoll)
         {
-            if (FirstRoll == 10)
+            FirstRoll = firstRoll;
+            SecondRoll = secondRoll;
+            DetermineFrameType();
+        }
+
+        public void SetFirstRoll(int pins)
+        {
+            FirstRoll = pins;
+            if (pins == Constants.Constants.MaxPins)
             {
                 Type = FrameType.Strike;
             }
-            else if (FirstRoll + SecondRoll == 10)
+        }
+
+        public void SetSecondRoll(int pins)
+        {
+            SecondRoll = pins;
+            DetermineFrameType();
+        }
+
+        public void SetBonusRoll(int pins)
+        {
+            ExtraRoll = pins;
+        }
+
+        private void DetermineFrameType()
+        {
+            if (FirstRoll == Constants.Constants.MaxPins)
+            {
+                Type = FrameType.Strike;
+            }
+            else if (FirstRoll + SecondRoll == Constants.Constants.MaxPins)
             {
                 Type = FrameType.Spare;
             }
