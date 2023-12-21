@@ -1,35 +1,31 @@
 ﻿using BowlingBall.Interfaces;
-using BowlingBall.Models;
 
 namespace BowlingBall.Repositories
 {
     public class InMemoryFrameRepository : IFrameRepository
     {
-        private readonly List<Frame> frames = new();
+        private readonly List<IFrame> frames;
 
-        public void AddFrame(Frame frame)
+        public InMemoryFrameRepository()
+        {
+            frames = new List<IFrame>(); 
+        }
+
+        public void AddFrame(IFrame frame)
         {
             frames.Add(frame);
         }
 
-        public List<Frame> GetAllFrames()
+        public IFrame GetCurrentFrame()
         {
-            return new List<Frame>(frames);
+            return frames.LastOrDefault();
         }
 
-        public void Clear()
+        public List<IFrame> GetAllFrames()
         {
-            frames.Clear();
-        }
-
-        public Frame GetCurrentFrame()
-        {
-            if (!frames.Any())
-            {
-                AddFrame(new Frame());
-            }
-            return frames.Last();
+            return new List<IFrame>(frames);
         }
     }
+
 }
 

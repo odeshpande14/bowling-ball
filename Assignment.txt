@@ -1,0 +1,5 @@
+﻿- Avoid using indexes
+- Code should be able to Handle addition of new Frame Type with minimal code changes
+- New frame type - 5-5 Frame
+  If firstRoll is 5 and secondRoll is also 5 then it is a 5-5 frame.
+  This frame gives a additional bonus ( spare bonus + 5-5 bonus ( half of first roll of next frame ) )

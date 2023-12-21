@@ -1,7 +1,7 @@
 ﻿using System.Net.NetworkInformation;
+using BowlingBall.Factories;
 using BowlingBall.Interfaces;
 using BowlingBall.Repositories;
-using BowlingBall.Strategies;
 
 namespace BowlingBall.Tests
 {
@@ -11,9 +11,9 @@ namespace BowlingBall.Tests
         [TestMethod]
         public void Gutter_game_score_should_be_zero_test()
         {
-            IScoreCalculationStrategy calculator = new StandardScoreCalculationStrategy();
             IFrameRepository frameRepository = new InMemoryFrameRepository();
-            Game game = new(frameRepository,calculator);
+            IFrameFactory frameFactory = new FrameFactory();
+            Game game = new(frameRepository, frameFactory);
             Roll(game, 0, 20);
             Assert.AreEqual(0, game.GetScore());
         }
@@ -21,19 +21,19 @@ namespace BowlingBall.Tests
         [TestMethod]
         public void AllStrike_Game_ShouldCalculateCorrectly()
         {
-            IScoreCalculationStrategy calculator = new StandardScoreCalculationStrategy();
             IFrameRepository frameRepository = new InMemoryFrameRepository();
-            Game game = new(frameRepository, calculator);
-            Roll(game, 10, 21);
+            IFrameFactory frameFactory = new FrameFactory();
+            Game game = new(frameRepository, frameFactory);
+            Roll(game, 10, 12);
             Assert.AreEqual(300, game.GetScore());
         }
 
         [TestMethod]
         public void Random_Game_ShouldCalculateCorrectly()
         {
-            IScoreCalculationStrategy calculator = new StandardScoreCalculationStrategy();
             IFrameRepository frameRepository = new InMemoryFrameRepository();
-            Game game = new(frameRepository, calculator);
+            IFrameFactory frameFactory = new FrameFactory();
+            Game game = new Game(frameRepository, frameFactory);
             game.Roll(2);
             game.Roll(7);
             // 2+7 = 9
@@ -70,11 +70,42 @@ namespace BowlingBall.Tests
         [TestMethod]
         public void AllSpare_Game_ShouldCalculateCorrectly()
         {
-            IScoreCalculationStrategy calculator = new StandardScoreCalculationStrategy();
             IFrameRepository frameRepository = new InMemoryFrameRepository();
-            Game game = new(frameRepository, calculator);
-            Roll(game, 5, 21);
-            Assert.AreEqual(150, game.GetScore());
+            IFrameFactory frameFactory = new FrameFactory();
+            Game game = new Game(frameRepository, frameFactory);
+            game.Roll(4);
+            game.Roll(6);
+            // 4+6+4=14
+            game.Roll(4);
+            game.Roll(6);
+            // 14+4+6+14 = 28
+            game.Roll(4);
+            game.Roll(6);
+            // 42
+            game.Roll(4);
+            game.Roll(6);
+            // 56
+            game.Roll(4);
+            game.Roll(6);
+            // 70
+            game.Roll(4);
+            game.Roll(6);
+            // 84
+            game.Roll(4);
+            game.Roll(6);
+            // 98
+            game.Roll(4);
+            game.Roll(6);
+            // 112
+            game.Roll(4);
+            game.Roll(6);
+            // 126
+            game.Roll(4);
+            game.Roll(6);
+            game.Roll(4);
+            //140
+
+            Assert.AreEqual(140, game.GetScore());
         }
 
         private static void Roll(Game game, int pins, int times)
